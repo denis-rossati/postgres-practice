@@ -1,6 +1,17 @@
-const { Client } = require('pg')
-const client = new Client()
-await client.connect()
-const res = await client.query('SELECT $1::text as message', ['Hello world!'])
-console.log(res.rows[0].message) // Hello world!
-await client.end()
+import { Client } from 'pg';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
+const client = new Client({
+  user: process.env.PG_USER,
+  database: process.env.PG_DB,
+  password: process.env.PG_PW,
+  port: Number(process.env.PG_PORT),
+});
+
+client.connect();
+
+export {
+  client,
+};

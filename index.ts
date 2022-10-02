@@ -1,11 +1,26 @@
 import express from 'express';
-import {client} from './src/model/connection';
+import * as dotenv from 'dotenv';
+import { Routes } from './src/infrastructure/routes';
+import { ErrorHandler } from './src/infrastructure/error/ErrorHandler';
+
+dotenv.config();
 const app = express();
 
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+Routes.loadRoutes(app);
+ErrorHandler.express(app);
 
-client.query('SELECT $1::text as message', ['Hello, world!']).then((res) => {
-    console.log(res.rows[0].message);
-    client.end();
-})
+// @todo: Create tests
+// @todo: Create some more routes
+// @todo: Implement observability
+// @todo: Create mailing on error
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  if (process.env.ENVIRONMENT === 'development') {
+    console.log(`port: ${port}`);
+  }
+});
+
+export {
+  app,
+};
