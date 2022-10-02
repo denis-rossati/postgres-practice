@@ -2,12 +2,13 @@
   "compilerOptions": {
     "target": "es2017",
     "module": "commonjs",
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "outDir": "./build",
+    "rootDir": "./",
     "lib": ["ES6"],
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "sourceMap": false,
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*", "index.ts"],
+  "exclude": ["node_modules", "database", "test"]
 }
