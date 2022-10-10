@@ -4,8 +4,11 @@ import { Actors } from '../../../../src/domain/service/Actors';
 import { Actors as ActorsModel } from '../../../../src/model/Actors';
 
 describe('Get all actors', () => {
-  afterEach(() => {
-    sinon.restore();
+  const sandbox = sinon.createSandbox();
+
+  afterEach((done) => {
+    jest.restoreAllMocks();
+    done();
   });
 
   it('should return all users', async () => {
@@ -15,38 +18,48 @@ describe('Get all actors', () => {
       { id: 3, first_name: 'LUKES', last_name: 'SILAS' },
     ];
 
-    const modelMock = sinon.mock(ActorsModel);
+    const stub = sandbox.stub(ActorsModel, 'getAll').returns(new Promise((resolve) => {
+      resolve(mockData);
+    }));
+
     const data = await Actors.getAll();
 
-    modelMock.expects('getAll').once().returns(mockData);
-    modelMock.expects('getAll').exactly(1);
-    modelMock.verify();
-
     expect(data).toEqual(mockData);
+    expect(stub.withArgs(client).calledOnce).toEqual(true);
   });
 });
 
 describe('Get actor by id', () => {
-  const mockData = [
-    { id: 1, first_name: 'PETER', last_name: 'BERKMAN' },
-    { id: 1, first_name: 'JAMES', last_name: 'DEVITO' },
-  ];
-
-  afterEach(() => {
-    jest.restoreAllMocks();
+  const sandbox = sinon.createSandbox();
+  afterEach((done) => {
+    sandbox.restore();
+    done();
   });
 
   it('should return a single actor', async () => {
-    jest.spyOn(ActorsModel, 'getById').mockResolvedValueOnce(mockData);
+    const mockData = [
+      { id: 1, first_name: 'PETER', last_name: 'BERKMAN' },
+      { id: 2, first_name: 'JAMES', last_name: 'DEVITO' },
+    ];
+
+    const stub = sandbox.stub(ActorsModel, 'getById').returns(new Promise((resolve) => {
+      resolve(mockData);
+    }));
+
     const data = await Actors.getById(1);
+
     expect(data).toEqual(mockData[0]);
-    expect(ActorsModel.getById).toBeCalledWith(client, 1);
+    expect(stub.withArgs(client, 1).calledOnce).toEqual(true);
   });
 
   it('should return null if any actor is found', async () => {
-    jest.spyOn(ActorsModel, 'getById').mockResolvedValueOnce([]);
+    const stub = sandbox.stub(ActorsModel, 'getById').returns(new Promise((resolve) => {
+      resolve([]);
+    }));
+
     const data = await Actors.getById(1);
+
     expect(data).toEqual(null);
-    expect(ActorsModel.getById).toBeCalledWith(client, 1);
+    expect(stub.withArgs(client, 1).calledOnce).toEqual(true);
   });
 });
