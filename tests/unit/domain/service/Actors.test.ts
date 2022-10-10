@@ -1,13 +1,13 @@
-import sinon from 'sinon';
-import { client } from '../../../../src/model/connection';
+import { pool } from '../../../../src/model/connection';
 import { Actors } from '../../../../src/domain/service/Actors';
 import { Actors as ActorsModel } from '../../../../src/model/Actors';
 
 describe('Get all actors', () => {
-  const sandbox = sinon.createSandbox();
+  beforeEach(() => {
+    jest.restoreAllMocks();
+  });
 
   afterEach((done) => {
-    jest.restoreAllMocks();
     done();
   });
 
@@ -18,21 +18,31 @@ describe('Get all actors', () => {
       { id: 3, first_name: 'LUKES', last_name: 'SILAS' },
     ];
 
-    const stub = sandbox.stub(ActorsModel, 'getAll').returns(new Promise((resolve) => {
+    jest.spyOn(ActorsModel, 'getAll').mockResolvedValueOnce(new Promise((resolve) => {
       resolve(mockData);
     }));
 
     const data = await Actors.getAll();
 
     expect(data).toEqual(mockData);
-    expect(stub.withArgs(client).calledOnce).toEqual(true);
+  });
+
+  it('should be called one time with DB connection', async () => {
+    const spy = jest.spyOn(ActorsModel, 'getAll');
+
+    await Actors.getAll();
+
+    expect(spy).toBeCalledTimes(1);
+    expect(spy).toBeCalledWith(pool);
   });
 });
 
 describe('Get actor by id', () => {
-  const sandbox = sinon.createSandbox();
+  beforeEach(() => {
+    jest.restoreAllMocks();
+  });
+
   afterEach((done) => {
-    sandbox.restore();
     done();
   });
 
@@ -42,24 +52,40 @@ describe('Get actor by id', () => {
       { id: 2, first_name: 'JAMES', last_name: 'DEVITO' },
     ];
 
-    const stub = sandbox.stub(ActorsModel, 'getById').returns(new Promise((resolve) => {
+    jest.spyOn(ActorsModel, 'getById').mockReturnValueOnce(new Promise((resolve) => {
       resolve(mockData);
     }));
 
     const data = await Actors.getById(1);
 
     expect(data).toEqual(mockData[0]);
-    expect(stub.withArgs(client, 1).calledOnce).toEqual(true);
   });
 
   it('should return null if any actor is found', async () => {
-    const stub = sandbox.stub(ActorsModel, 'getById').returns(new Promise((resolve) => {
+    jest.spyOn(ActorsModel, 'getById').mockResolvedValueOnce(new Promise((resolve) => {
       resolve([]);
     }));
 
     const data = await Actors.getById(1);
 
     expect(data).toEqual(null);
-    expect(stub.withArgs(client, 1).calledOnce).toEqual(true);
+  });
+
+  it('should return null if DB returns null', async () => {
+    jest.spyOn(ActorsModel, 'getById').mockResolvedValueOnce(new Promise((resolve) => {
+      resolve(null);
+    }));
+
+    const data = await Actors.getById(1);
+
+    expect(data).toEqual(null);
+  });
+
+  it('should be called one time with DB connection and actor id', async () => {
+    const spy = jest.spyOn(ActorsModel, 'getById');
+
+    await Actors.getById(1);
+    expect(spy).toBeCalledTimes(1);
+    expect(spy).toBeCalledWith(pool, 1);
   });
 });
