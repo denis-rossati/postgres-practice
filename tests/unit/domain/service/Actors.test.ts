@@ -1,14 +1,14 @@
-import { pool } from '../../../../src/model/connection';
+import { connection } from '../../../../src/model/connection';
 import { Actors } from '../../../../src/domain/service/Actors';
 import { Actors as ActorsModel } from '../../../../src/model/Actors';
+
+afterAll(async () => {
+  await connection.end();
+});
 
 describe('Get all actors', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
-  });
-
-  afterEach((done) => {
-    done();
   });
 
   it('should return all users', async () => {
@@ -33,17 +33,12 @@ describe('Get all actors', () => {
     await Actors.getAll();
 
     expect(spy).toBeCalledTimes(1);
-    expect(spy).toBeCalledWith(pool);
   });
 });
 
 describe('Get actor by id', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
-  });
-
-  afterEach((done) => {
-    done();
   });
 
   it('should return a single actor', async () => {
@@ -86,6 +81,6 @@ describe('Get actor by id', () => {
 
     await Actors.getById(1);
     expect(spy).toBeCalledTimes(1);
-    expect(spy).toBeCalledWith(pool, 1);
+    expect(spy).toBeCalledWith(1);
   });
 });
