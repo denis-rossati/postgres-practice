@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b tsconfig.json",
     "dev": "nodemon --watch 'src/' -e ts",
     "lint": "eslint src/**/*.ts index.ts",
-    "test": "jest tests",
-    "coverage": "jest --collect-coverage"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cover": "jest --collect-coverage",
+    "test:mutation": "stryker run"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +22,8 @@
     "pg": "^8.8.0"
   },
   "devDependencies": {
+    "@stryker-mutator/core": "^6.2.3",
+    "@stryker-mutator/jest-runner": "^6.2.3",
     "@types/express": "^4.17.14",
     "@types/jest": "^29.1.1",
     "@types/pg": "^8.6.5",
