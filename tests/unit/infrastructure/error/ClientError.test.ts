@@ -1,4 +1,5 @@
 import Joi, { ValidationErrorItem } from 'joi';
+import * as http from 'http';
 import { ClientError } from '../../../../src/infrastructure/error/ClientError';
 import { httpCodes } from '../../../../src/infrastructure/httpCodes';
 
@@ -13,13 +14,13 @@ describe(' the ClientError class', () => {
     const firstError = Joi.string().required().validate(123) as unknown as ValidationError;
     const secondError = Joi.number().required().validate('foo') as unknown as ValidationError;
 
-    const expected = new ClientError(
+    const result = new ClientError(
       httpCodes.badRequest,
       firstError.error.message,
       [...firstError.error.details, ...secondError.error.details],
     );
 
-    const result = {
+    const expected = {
       status: 400,
       message: '"value" must be a string',
       details: [{
@@ -43,22 +44,33 @@ describe(' the ClientError class', () => {
       ],
     };
 
-    expect(expected).toEqual(result);
+    expect(result).toEqual(expected);
   });
 
   it('details should be an empty array when omitted', () => {
     const firstError = Joi.string().required().validate(123) as unknown as ValidationError;
-    const expected = new ClientError(
+    const result = new ClientError(
       httpCodes.badRequest,
       firstError.error.message,
     );
 
-    const result = {
+    const expected = {
       status: 400,
       message: '"value" must be a string',
       details: [],
     };
 
-    expect(expected).toEqual(result);
+    expect(result).toEqual(expected);
+  });
+
+  it('should return the status when calling getStatus', () => {
+    const firstError = Joi.string().required().validate(123) as unknown as ValidationError;
+    const status = httpCodes.success;
+    const result = new ClientError(
+      status,
+      firstError.error.message,
+    );
+
+    expect(result.getStatus()).toEqual(status);
   });
 });
