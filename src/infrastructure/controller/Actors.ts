@@ -4,15 +4,25 @@ import { httpCodes } from '../httpCodes';
 
 export class Actors {
   public static async getById(req: Request, res: Response) {
-    const actor = await ActorsService.getById(Number(req.params.id));
+    const id = Number(req.params.id);
+    const actor = await ActorsService.getById(id);
+
     if (actor === null) {
-      return res.status(httpCodes.noContent).json({ message: 'No actor found', payload: {} });
+      res.status(httpCodes.noContent).json({ message: 'No actor found', payload: {} });
+      return;
     }
-    return res.status(httpCodes.success).json({ payload: actor });
+
+    res.status(httpCodes.success).json({ payload: actor });
   }
 
   public static async getAll(req: Request, res: Response) {
     const actors = await ActorsService.getAll();
-    return res.status(httpCodes.success).json({ payload: actors });
+
+    if (actors === null) {
+      res.status(500).json({ message: 'Our bad. Internal server error' });
+      return;
+    }
+
+    res.status(httpCodes.success).json({ payload: actors });
   }
 }
