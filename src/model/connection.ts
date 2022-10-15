@@ -1,17 +1,19 @@
-import { Client } from 'pg';
+import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const client = new Client({
+const connection = new Pool({
   user: process.env.PG_USER,
   database: process.env.PG_DB,
   password: process.env.PG_PW,
   port: Number(process.env.PG_PORT),
 });
 
-client.connect();
+connection.on('error', () => {
+  process.exit(-1);
+});
 
 export {
-  client,
+  connection,
 };
