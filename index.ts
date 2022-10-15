@@ -13,10 +13,13 @@ ErrorHandler.express(app);
 // @todo: Create some more routes
 // @todo: Implement observability
 // @todo: Create mailing on error
+// @todo: Implement caching
+// @todo: Create routes with expensive queries
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   if (process.env.ENVIRONMENT === 'development') {
+    // eslint-disable-next-line no-console ---- to not bother the development flow.
     console.log(`port: ${port}`);
   }
 });
