@@ -42,7 +42,7 @@ describe('The ClientError', () => {
       details: [],
     };
 
-    expect(result.presentToClient()).toEqual(expected);
+    expect(result.presentToClient()).toStrictEqual(expected);
   });
 
   it('should return the status when calling getStatus', () => {

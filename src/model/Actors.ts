@@ -5,11 +5,7 @@ export class Actors {
     const client = await connection.connect();
     try {
       const actors = await client.query(
-        `SELECT actor_id as id,
-                        first_name,
-                        last_name
-                 FROM Actor;
-                `,
+        'SELECT actor_id as id, first_name, last_name FROM Actor;',
       );
 
       return actors.rows;
@@ -24,12 +20,7 @@ export class Actors {
     const client = await connection.connect();
     try {
       const actor = await client.query(
-        `SELECT actor_id as id,
-                        first_name,
-                        last_name
-                 FROM Actor
-                 WHERE actor_id = $1
-                 LIMIT 1`,
+        'SELECT actor_id as id, first_name, last_name FROM Actor WHERE actor_id = $1 LIMIT 1',
         [id],
       );
 

@@ -12,12 +12,13 @@ export class Actors {
       return;
     }
 
-    if (actor.length === 0) {
-      res.status(httpCodes.noContent).json({ message: 'No actor found', payload: { actor: {} } });
+    const responseKeys = Object.keys(actor.actor);
+    if (responseKeys.length === 3) {
+      res.status(httpCodes.success).json({ payload: actor });
       return;
     }
 
-    res.status(httpCodes.success).json({ payload: { actor: actor[0] } });
+    res.status(httpCodes.noContent).json({ message: 'No actor found', payload: { actor: {} } });
   }
 
   public static async getAll(req: Request, res: Response) {
