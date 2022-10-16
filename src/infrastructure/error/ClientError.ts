@@ -8,7 +8,7 @@ export class ClientError {
 
   private readonly message: string;
 
-  private details: ValidationErrorItem[];
+  private readonly details: ValidationErrorItem[];
 
   constructor(status: ValueOf<typeof httpCodes>, message: string, details: ValidationErrorItem[] = []) {
     this.status = status;
@@ -20,11 +20,19 @@ export class ClientError {
     return this.status;
   }
 
+  private getMessage() {
+    return this.message;
+  }
+
+  private getDetails() {
+    return this.details;
+  }
+
   public presentToClient() {
     return {
-      message: this.message,
+      message: this.getMessage(),
       details: [
-        ...this.details.map(({ message }) => message),
+        ...this.getDetails().map(({ message }) => message),
       ],
     };
   }

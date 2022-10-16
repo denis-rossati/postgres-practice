@@ -10,10 +10,6 @@ const connection = new Pool({
   port: Number(process.env.PG_PORT),
 });
 
-connection.on('error', () => {
-  process.exit(-1);
-});
-
 export {
   connection,
 };

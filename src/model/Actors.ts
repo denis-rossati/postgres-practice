@@ -16,7 +16,7 @@ export class Actors {
     } catch (e) {
       return null;
     } finally {
-      client.release();
+      await client.release();
     }
   }
 
@@ -37,7 +37,7 @@ export class Actors {
     } catch (e) {
       return null;
     } finally {
-      client.release();
+      await client.release();
     }
   }
 }

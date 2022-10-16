@@ -9,7 +9,7 @@ export class Actors {
     const response = await ActorsModel.getById(id);
 
     if (response !== null) {
-      return response[0] || null;
+      return response;
     }
 
     return null;
