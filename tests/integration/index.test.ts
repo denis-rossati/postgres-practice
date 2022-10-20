@@ -116,11 +116,11 @@ describe('GET /actors/:id ', () => {
       jest.clearAllMocks();
     });
 
-    it.only('should return status code 204 and the respective message', async () => {
+    it('should return status code 204 and and empty body', async () => {
       const response = await request(app).get('/actors/1');
 
       expect(response.statusCode).toBe(204);
-      expect(response.body).toStrictEqual({ message: 'No actor found', payload: { actor: {} } });
+      expect(response.body).toStrictEqual({});
     });
   });
 

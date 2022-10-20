@@ -128,9 +128,7 @@ describe('The Actors controller', () => {
       expect(resMock.status).toBeCalledTimes(1);
       expect(resMock.status).toBeCalledWith(204);
 
-      expect(resProps.json).toBeCalledTimes(1);
-      const response = { message: 'No actor found', payload: { actor: {} } };
-      expect(resProps.json).toBeCalledWith(response);
+      expect(resProps.json).not.toBeCalled();
     });
 
     it('should return code 204 if the response returns a object whose number of keys are greater than 3', async () => {
@@ -147,9 +145,7 @@ describe('The Actors controller', () => {
       expect(resMock.status).toBeCalledTimes(1);
       expect(resMock.status).toBeCalledWith(204);
 
-      expect(resProps.json).toBeCalledTimes(1);
-      const response = { message: 'No actor found', payload: { actor: {} } };
-      expect(resProps.json).toBeCalledWith(response);
+      expect(resProps.json).not.toBeCalled();
     });
 
     it('should return code 204 if the response returns a object whose number of keys are lesser than 3', async () => {
@@ -166,9 +162,7 @@ describe('The Actors controller', () => {
       expect(resMock.status).toBeCalledTimes(1);
       expect(resMock.status).toBeCalledWith(204);
 
-      expect(resProps.json).toBeCalledTimes(1);
-      const response = { message: 'No actor found', payload: { actor: {} } };
-      expect(resProps.json).toBeCalledWith(response);
+      expect(resProps.json).not.toBeCalled();
     });
 
     it('should return code 200 and the actors if the service response is a success', async () => {
