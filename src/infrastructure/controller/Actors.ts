@@ -8,10 +8,15 @@ export class Actors {
     const actor = await ActorsService.getById(id);
 
     if (actor === null) {
-      res.status(httpCodes.noContent).json({ message: 'No actor found', payload: {} });
+      res.status(httpCodes.internalServerError).json({ message: 'Our bad. Internal server error' });
       return;
     }
 
+    const responseKeys = Object.keys(actor.actor);
+    if (responseKeys.length !== 3) {
+      res.status(httpCodes.noContent);
+      return;
+    }
     res.status(httpCodes.success).json({ payload: actor });
   }
 
@@ -19,7 +24,7 @@ export class Actors {
     const actors = await ActorsService.getAll();
 
     if (actors === null) {
-      res.status(500).json({ message: 'Our bad. Internal server error' });
+      res.status(httpCodes.internalServerError).json({ message: 'Our bad. Internal server error' });
       return;
     }
 

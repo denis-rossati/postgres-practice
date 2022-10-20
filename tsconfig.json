@@ -8,6 +8,7 @@
     "strict": true,
     "esModuleInterop": true,
     "sourceMap": false,
+    "types": ["jest"],
   },
   "include": ["src/**/*", "index.ts"],
   "exclude": ["node_modules", "database", "test"]

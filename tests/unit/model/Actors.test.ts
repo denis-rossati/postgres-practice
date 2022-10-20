@@ -71,6 +71,13 @@ describe('The actor model', () => {
       expect(actors).toStrictEqual(expected);
     });
 
+    it('should safely use a SQL query', async () => {
+      await Actors.getAll();
+
+      const query = 'SELECT actor_id as id, first_name, last_name FROM Actor;';
+      expect(spyObject.query).toBeCalledWith(query);
+    });
+
     it('should return null on error', async () => {
       spyObject.query.mockImplementationOnce(() => {
         throw new Error('Something went wrong');
@@ -139,6 +146,13 @@ describe('The actor model', () => {
       const actor = await Actors.getById(1);
 
       expect(actor).toStrictEqual(expected);
+    });
+
+    it('should safely use a SQL query', async () => {
+      await Actors.getById(1);
+
+      const query = 'SELECT actor_id as id, first_name, last_name FROM Actor WHERE actor_id = $1 LIMIT 1';
+      expect(spyObject.query).toBeCalledWith(query, [1]);
     });
 
     it('should return null on error', async () => {

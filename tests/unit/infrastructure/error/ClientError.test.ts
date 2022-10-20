@@ -1,15 +1,14 @@
 import Joi, { ValidationErrorItem } from 'joi';
-import * as http from 'http';
-import { ClientError } from '../../../../src/infrastructure/error/ClientError';
+import { ClientError } from '../../../../src/infrastructure/error';
 import { httpCodes } from '../../../../src/infrastructure/httpCodes';
 
-interface ValidationError {
-    error: ValidationError;
-    message: string;
-    details: ValidationErrorItem[];
+type ValidationError = {
+  error: ValidationError;
+  message: string;
+  details: ValidationErrorItem[];
 }
 
-describe(' the ClientError class', () => {
+describe('The ClientError', () => {
   it('should return a detailed message error', () => {
     const firstError = Joi.string().required().validate(123) as unknown as ValidationError;
     const secondError = Joi.number().required().validate('foo') as unknown as ValidationError;
@@ -21,33 +20,17 @@ describe(' the ClientError class', () => {
     );
 
     const expected = {
-      status: 400,
       message: '"value" must be a string',
-      details: [{
-        context: {
-          label: 'value',
-          value: 123,
-        },
-        message: '"value" must be a string',
-        path: [],
-        type: 'string.base',
-      },
-      {
-        context: {
-          label: 'value',
-          value: 'foo',
-        },
-        message: '"value" must be a number',
-        path: [],
-        type: 'number.base',
-      },
+      details: [
+        '"value" must be a string',
+        '"value" must be a number',
       ],
     };
 
-    expect(result).toEqual(expected);
+    expect(result.presentToClient()).toEqual(expected);
   });
 
-  it('details should be an empty array when omitted', () => {
+  it('should be an empty array when details are undefined', () => {
     const firstError = Joi.string().required().validate(123) as unknown as ValidationError;
     const result = new ClientError(
       httpCodes.badRequest,
@@ -55,12 +38,11 @@ describe(' the ClientError class', () => {
     );
 
     const expected = {
-      status: 400,
       message: '"value" must be a string',
       details: [],
     };
 
-    expect(result).toEqual(expected);
+    expect(result.presentToClient()).toStrictEqual(expected);
   });
 
   it('should return the status when calling getStatus', () => {

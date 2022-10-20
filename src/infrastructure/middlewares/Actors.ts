@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import { NextFunction, Request, Response } from 'express';
 import { httpCodes } from '../httpCodes';
-import { ClientError } from '../error/ClientError';
+import { ClientError } from '../error';
 
 export class Actors {
   public static checkActorId(req: Request, res: Response, next: NextFunction) {

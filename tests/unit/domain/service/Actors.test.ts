@@ -44,14 +44,30 @@ describe('The Actors controller', () => {
       jest.restoreAllMocks();
     });
 
-    it('should return an empty list if no actors are found', async () => {
-      jest.spyOn(ActorsModel, 'getById').mockResolvedValueOnce(new Promise((resolve) => {
+    it('should return an empty object if no actors are found', async () => {
+      jest.spyOn(ActorsModel, 'getById').mockReturnValueOnce((new Promise((resolve) => {
         resolve([]);
+      })));
+
+      const data = await Actors.getById(1);
+
+      expect(data).toStrictEqual({ actor: {} });
+    });
+
+    it('should return one actor object if any actors are found', async () => {
+      const mockData = [
+        { id: 1, first_name: 'PETER', last_name: 'BERKMAN' },
+        { id: 1, first_name: 'JAMES', last_name: 'DEVITO' },
+        { id: 1, first_name: 'LUKES', last_name: 'SILAS' },
+      ];
+
+      jest.spyOn(ActorsModel, 'getById').mockReturnValueOnce(new Promise((resolve) => {
+        resolve(mockData);
       }));
 
       const data = await Actors.getById(1);
 
-      expect(data).toEqual([]);
+      expect(data).toEqual({ actor: mockData[0] });
     });
 
     it('should return null if DB returns null', async () => {
