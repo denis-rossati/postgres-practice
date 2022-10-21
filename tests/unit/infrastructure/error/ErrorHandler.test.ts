@@ -1,72 +1,76 @@
 import {
-  Application, NextFunction, Request, Response,
+    Application, NextFunction, Request, Response,
 } from 'express';
+
 import { ClientError, ErrorHandler } from '../../../../src/infrastructure/error';
+
 import { httpCodes } from '../../../../src/infrastructure/httpCodes';
 
 describe('The ErrorHandler', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
-  it('should call the status the client presentation if an error is raised', () => {
-    const reqMock = {
-      params: { id: 1 },
-    } as unknown as Request;
+    it('should call the status the client presentation if an error is raised', () => {
+        const reqMock = {
+            params: { id: 1 },
+        } as unknown as Request;
 
-    const resProps = {
-      json: jest.fn(),
-    };
+        const resProps = {
+            json: jest.fn(),
+        };
 
-    const resMock = {
-      status: jest.fn(() => resProps),
-    } as unknown as Response;
+        const resMock = {
+            status: jest.fn(() => resProps),
+        } as unknown as Response;
 
-    const nextMock = jest.fn() as unknown as NextFunction;
+        const nextMock = jest.fn() as unknown as NextFunction;
 
-    const error = new ClientError(httpCodes.internalServerError, 'foo');
+        const error = new ClientError(httpCodes.internalServerError, 'foo');
 
-    ErrorHandler.expressHandler(error, reqMock, resMock, nextMock);
+        ErrorHandler.expressHandler(error, reqMock, resMock, nextMock);
 
-    const expectedStatus = error.getStatus();
-    expect(resMock.status).toBeCalledWith(expectedStatus);
+        const expectedStatus = error.getStatus();
 
-    const expectedPresentation = error.presentToClient();
-    expect(resProps.json).toBeCalledWith(expectedPresentation);
-  });
+        expect(resMock.status).toBeCalledWith(expectedStatus);
 
-  it('should pass the error through the next callback if an error is raised', () => {
-    const reqMock = {
-      params: { id: 1 },
-    } as unknown as Request;
+        const expectedPresentation = error.presentToClient();
 
-    const resProps = {
-      json: jest.fn(),
-      status: jest.fn(),
-    };
+        expect(resProps.json).toBeCalledWith(expectedPresentation);
+    });
 
-    const resMock = {
-      json: jest.fn(() => resProps),
-      status: jest.fn(() => resProps),
-    } as unknown as Response;
+    it('should pass the error through the next callback if an error is raised', () => {
+        const reqMock = {
+            params: { id: 1 },
+        } as unknown as Request;
 
-    const nextMock = jest.fn((error?: ClientError) => error) as unknown as NextFunction;
+        const resProps = {
+            json: jest.fn(),
+            status: jest.fn(),
+        };
 
-    const error = new ClientError(httpCodes.internalServerError, 'foo');
+        const resMock = {
+            json: jest.fn(() => resProps),
+            status: jest.fn(() => resProps),
+        } as unknown as Response;
 
-    ErrorHandler.expressHandler(error, reqMock, resMock, nextMock);
+        const nextMock = jest.fn((error?: ClientError) => error) as unknown as NextFunction;
 
-    expect(nextMock).toBeCalledTimes(1);
-    expect(nextMock).toBeCalledWith(error);
-  });
+        const error = new ClientError(httpCodes.internalServerError, 'foo');
 
-  it('should use the express method for general error handling', () => {
-    const app = {
-      use: jest.fn(),
-    };
+        ErrorHandler.expressHandler(error, reqMock, resMock, nextMock);
 
-    ErrorHandler.express(app as unknown as Application);
+        expect(nextMock).toBeCalledTimes(1);
+        expect(nextMock).toBeCalledWith(error);
+    });
 
-    expect(app.use).toBeCalledWith(ErrorHandler.expressHandler);
-  });
+    it('should use the express method for general error handling', () => {
+        const app = {
+            use: jest.fn(),
+        };
+
+        ErrorHandler.express(app as unknown as Application);
+
+        expect(app.use).toBeCalledWith(ErrorHandler.expressHandler);
+    });
 });

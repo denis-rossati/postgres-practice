@@ -1,6 +1,9 @@
 import express from 'express';
+
 import * as dotenv from 'dotenv';
+
 import { Routes } from './src/infrastructure/routes';
+
 import { ErrorHandler } from './src/infrastructure/error/ErrorHandler';
 
 dotenv.config();
@@ -17,13 +20,14 @@ ErrorHandler.express(app);
 // @todo: Create routes with expensive queries
 
 const port = process.env.PORT || 3000;
+
 app.listen(port, () => {
-  if (process.env.ENVIRONMENT === 'development') {
+    if (process.env.ENVIRONMENT === 'development') {
     // eslint-disable-next-line no-console ---- to not bother the development flow.
-    console.log(`port: ${port}`);
-  }
+        console.log(`port: ${port}`);
+    }
 });
 
 export {
-  app,
+    app,
 };

@@ -6,12 +6,13 @@
   "scripts": {
     "build": "tsc -b tsconfig.json",
     "dev": "nodemon --watch 'src/' -e ts",
-    "lint": "eslint src/**/*.ts index.ts",
+    "lint": "eslint .eslintrc.js src index.ts tests",
+    "lint:fix": "eslint .eslintrc.js src index.ts tests --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cover": "jest --collect-coverage",
     "test:mutation": "stryker run",
-    "reminder":  "// @todo: open PR in stryker the lines in the mutation report should lead to the file line"
+    "reminder": "// @todo: open PR in stryker the lines in the mutation report should lead to the file line"
   },
   "keywords": [],
   "author": "",
@@ -30,8 +31,8 @@
     "@types/pg": "^8.6.5",
     "@types/sinon": "^10.0.13",
     "@types/supertest": "^2.0.12",
-    "@typescript-eslint/eslint-plugin": "^5.38.1",
-    "@typescript-eslint/parser": "^5.38.1",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
     "eslint": "8.22.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
