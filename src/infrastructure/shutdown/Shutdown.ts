@@ -3,7 +3,7 @@ import { Server as HttpServer, IncomingMessage, ServerResponse } from 'http';
 import { Server as HttpsServer } from 'https';
 
 type Server = HttpsServer | HttpServer;
-type FlaggedConnection = { isIdle: boolean, connection: Server };
+type FlaggedConnection = { isIdle: boolean, connection: NodeJS.Socket };
 type Connections = { [key: number]: FlaggedConnection };
 
 // Keep track of connections and their status and close all idle connections and make sure to close active connections
@@ -39,7 +39,7 @@ export class Shutdown {
         this.server.on('request', this.onRequest.bind(this));
     }
 
-    private onConnection(connection: Server) {
+    private onConnection(connection: NodeJS.Socket) {
         const flaggedConnection = { isIdle: true, connection };
         const { connectionId } = this;
 
@@ -50,8 +50,8 @@ export class Shutdown {
     }
 
     private onRequest(request: IncomingMessage, response: ServerResponse) {
-        const connection = request.socket;
-        const flaggedConnection = { isIdle: false, connection };
+        const { connection } = request;
+        const flaggedConnection: FlaggedConnection = { isIdle: false, connection };
 
         response.on('finish', () => {
             flaggedConnection.isIdle = true;
@@ -66,7 +66,7 @@ export class Shutdown {
         if (request.isIdle) {
             const { connection } = request;
 
-            connection.destroy();
+            connection.end();
         }
     }
 
