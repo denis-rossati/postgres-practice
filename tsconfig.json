@@ -4,12 +4,26 @@
     "module": "commonjs",
     "outDir": "./build",
     "rootDir": "./",
-    "lib": ["ES6"],
+    "lib": [
+      "ES6"
+    ],
     "strict": true,
     "esModuleInterop": true,
     "sourceMap": false,
-    "types": ["jest"],
+    "types": [
+      "jest"
+    ],
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
-  "include": ["src/**/*", "index.ts"],
-  "exclude": ["node_modules", "database", "test"]
+  "include": [
+    "src/**/*",
+    "index.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "database",
+    "test"
+  ]
 }
