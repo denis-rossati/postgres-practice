@@ -5,6 +5,7 @@ import { Server as HttpsServer } from 'https';
 type Server = HttpsServer | HttpServer;
 type FlaggedConnection = { isIdle: boolean, connection: NodeJS.Socket };
 type Connections = { [key: number]: FlaggedConnection };
+type CallbackSignature = (server: Server, connections: Connections) => void;
 
 // Keep track of connections and their status and close all idle connections and make sure to close active connections
 // after the request is processed.
@@ -15,15 +16,19 @@ export class Shutdown {
 
     private terminating = false;
 
-    server: Server;
+    private watching = false;
+
+    private readonly server: Server;
 
     constructor(server: Server) {
         this.server = server;
-
-        this.watchServer();
     }
 
     public reap() {
+        if (!this.isWatching()) {
+            throw new Error('The server must be on watch to be reaped.');
+        }
+
         this.setTerminating(true);
         this.server.close();
 
@@ -31,15 +36,21 @@ export class Shutdown {
             const connection = this.connections[Number(key)];
 
             Shutdown.closeConnection(connection);
+
+            delete this.connections[Number(key)];
         });
     }
 
-    private watchServer() {
-        this.server.on('connection', this.onConnection.bind(this));
-        this.server.on('request', this.onRequest.bind(this));
+    public watchServer() {
+        this.server.on('connection', this.onConnection);
+        this.server.on('request', this.onRequest);
+
+        this.setWatching(true);
+
+        return this;
     }
 
-    private onConnection(connection: NodeJS.Socket) {
+    public onConnection(connection: NodeJS.Socket, callback?: CallbackSignature) {
         const flaggedConnection = { isIdle: true, connection };
         const { connectionId } = this;
 
@@ -47,11 +58,15 @@ export class Shutdown {
 
         this.connections[connectionId] = flaggedConnection;
         this.setNextConnectionId();
+
+        if (callback !== undefined) {
+            callback(this.getServer(), this.getConnections());
+        }
     }
 
-    private onRequest(request: IncomingMessage, response: ServerResponse) {
-        const { connection } = request;
-        const flaggedConnection: FlaggedConnection = { isIdle: false, connection };
+    public onRequest(request: IncomingMessage, response: ServerResponse, callback?: CallbackSignature) {
+        const { socket } = request;
+        const flaggedConnection: FlaggedConnection = { isIdle: false, connection: socket };
 
         response.on('finish', () => {
             flaggedConnection.isIdle = true;
@@ -60,6 +75,10 @@ export class Shutdown {
                 Shutdown.closeConnection(flaggedConnection);
             }
         });
+
+        if (callback !== undefined) {
+            callback(this.getServer(), this.getConnections());
+        }
     }
 
     private static closeConnection(request: FlaggedConnection) {
@@ -82,5 +101,21 @@ export class Shutdown {
 
     private setTerminating(isTerminating: boolean) {
         this.terminating = isTerminating;
+    }
+
+    private setWatching(isWatching: boolean) {
+        this.watching = isWatching;
+    }
+
+    private isWatching() {
+        return this.watching;
+    }
+
+    public getConnections() {
+        return this.connections;
+    }
+
+    public getServer() {
+        return this.server;
     }
 }
