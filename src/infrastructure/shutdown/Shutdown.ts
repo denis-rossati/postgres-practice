@@ -7,8 +7,10 @@ type FlaggedConnection = { isIdle: boolean, connection: NodeJS.Socket };
 type Connections = { [key: number]: FlaggedConnection };
 type CallbackSignature = (server: Server, connections: Connections) => void;
 
-// Keep track of connections and their status and close all idle connections and make sure to close active connections
-// after the request is processed.
+/**
+ * Keep track of connections and their status and close all idle connections and make sure to close active connections
+ * after the request is processed.
+ */
 export class Shutdown {
     private connections: Connections = {};
 
@@ -41,6 +43,9 @@ export class Shutdown {
         });
     }
 
+    /**
+   * Track each connection or request in the server.
+   */
     public watchServer() {
         this.server.on('connection', this.onConnection);
         this.server.on('request', this.onRequest);
@@ -50,6 +55,11 @@ export class Shutdown {
         return this;
     }
 
+    /**
+   * Track a socket connection.
+   * @param connection
+   * @param callback
+   */
     public onConnection(connection: NodeJS.Socket, callback?: CallbackSignature) {
         const flaggedConnection = { isIdle: true, connection };
         const { connectionId } = this;
@@ -64,6 +74,12 @@ export class Shutdown {
         }
     }
 
+    /**
+   * Track a request.
+   * @param request
+   * @param response
+   * @param callback
+   */
     public onRequest(request: IncomingMessage, response: ServerResponse, callback?: CallbackSignature) {
         const { socket } = request;
         const flaggedConnection: FlaggedConnection = { isIdle: false, connection: socket };
@@ -81,6 +97,11 @@ export class Shutdown {
         }
     }
 
+    /**
+   * Close a idle socket connection.
+   * @param request
+   * @private
+   */
     private static closeConnection(request: FlaggedConnection) {
         if (request.isIdle) {
             const { connection } = request;
