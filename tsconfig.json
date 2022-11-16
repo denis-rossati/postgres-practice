@@ -11,10 +11,12 @@
     "esModuleInterop": true,
     "sourceMap": false,
     "types": [
-      "jest"
-    ],
-    "typeRoots": [
-      "node_modules/@types"
+      "jest",
+      "node",
+      "express",
+      "pg",
+      "sinon",
+      "supertest"
     ]
   },
   "include": [
