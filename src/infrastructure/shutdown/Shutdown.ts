@@ -1,4 +1,3 @@
-// inspired by @moebius/http-graceful-shutdown, but the lib seems abandoned.
 import { Server as HttpServer, IncomingMessage, ServerResponse } from 'http';
 import { Server as HttpsServer } from 'https';
 
@@ -10,6 +9,10 @@ type CallbackSignature = (server: Server, connections: Connections) => void;
 /**
  * Keep track of connections and their status and close all idle connections and make sure to close active connections
  * after the request is processed.
+ *
+ * Some quick notes: This is strongly inspired by @moebius/http-graceful-shutdown, since the lib seems abandoned,
+ * I tried to create a duplicate myself.
+ * Also, yes, node handles end of connections by its own, but I want an excuse for trying some low level stuff.
  */
 export class Shutdown {
     private connections: Connections = {};

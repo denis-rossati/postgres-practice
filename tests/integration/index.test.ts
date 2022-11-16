@@ -1,11 +1,12 @@
 import request from 'supertest';
 
-import { app } from '../../index';
+import { app, server } from '../../index';
 
 import { connection } from '../../src/model/connection';
 
 afterAll(async () => {
     await connection.end();
+    server.close();
 });
 
 describe('GET /actors ', () => {

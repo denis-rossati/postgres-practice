@@ -22,14 +22,9 @@ ErrorHandler.express(app);
 
 const port = process.env.PORT || 3000;
 
-const server = app.listen(port, () => {
-    if (process.env.ENVIRONMENT === 'development') {
-    // eslint-disable-next-line no-console ---- to not bother the development flow.
-        console.log(`port: ${port}`);
-    }
-});
+const server = app.listen(port);
 
-const shutdown = new Shutdown(server);
+const shutdown = new Shutdown(server).watchServer();
 
 process.on('SIGTERM', () => {
     shutdown.reap();
@@ -37,4 +32,5 @@ process.on('SIGTERM', () => {
 
 export {
     app,
+    server,
 };
